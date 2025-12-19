@@ -1,14 +1,6 @@
 {
   "version": 2,
   "buildCommand": "npm install",
-  "env": {
-    "NODE_ENV": "production",
-    "DATABASE_URL": "@database_url",
-    "JWT_SECRET": "@jwt_secret",
-    "FRONTEND_URL": "@frontend_url",
-    "RESEND_API_KEY": "@resend_api_key",
-    "FROM_EMAIL": "@from_email"
-  },
   "functions": {
     "api/index.js": {
       "memory": 1024,
