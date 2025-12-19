@@ -114,8 +114,17 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-// Error handler
-app.use(errorHandler);
+// Error handler - log all errors
+app.use((err, req, res, next) => {
+  console.error('=== ERROR ===');
+  console.error('Message:', err.message);
+  console.error('Stack:', err.stack);
+  console.error('URL:', req.url);
+  console.error('Method:', req.method);
+  console.error('================');
+
+  errorHandler(err, req, res, next);
+});
 
 // Export as both default and named export for Vercel compatibility
 export default app;
