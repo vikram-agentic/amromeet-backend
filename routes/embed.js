@@ -63,8 +63,8 @@ router.get('/:username', async (req, res, next) => {
   try {
     const { username } = req.params;
 
-    // Get event types by username/slug
-    const eventResult = await pool.query(
+    // Try exact slug match first, then try matching with UUID suffix
+    let eventResult = await pool.query(
       `SELECT et.id, et.user_id, et.name, et.description, et.duration_minutes,
               et.color, u.first_name, u.last_name, u.company_name, u.avatar_url
        FROM event_types et
@@ -73,6 +73,21 @@ router.get('/:username', async (req, res, next) => {
        LIMIT 1`,
       [username]
     );
+
+    // If not found and username looks like it might have a UUID suffix, try base slug
+    if (eventResult.rows.length === 0 && username.match(/-[a-f0-9]{8}$/)) {
+      const baseSlug = username.replace(/-[a-f0-9]{8}$/, '');
+      eventResult = await pool.query(
+        `SELECT et.id, et.user_id, et.name, et.description, et.duration_minutes,
+                et.color, u.first_name, u.last_name, u.company_name, u.avatar_url
+         FROM event_types et
+         JOIN users u ON et.user_id = u.id
+         WHERE et.slug LIKE $1 AND et.is_active = TRUE AND et.deleted_at IS NULL
+         ORDER BY et.created_at DESC
+         LIMIT 1`,
+        [`${baseSlug}-%`]
+      );
+    }
 
     if (eventResult.rows.length === 0) {
       return res.status(404).json({ error: 'Event not found' });
