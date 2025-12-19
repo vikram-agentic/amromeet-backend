@@ -24,10 +24,23 @@ app.use(morgan('combined'));
 
 // CORS configuration - handle with or without trailing slash
 const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:3000').replace(/\/$/, '');
+console.log('CORS enabled for:', frontendUrl);
+
+// CORS should be very permissive for public routes
 app.use(cors({
-  origin: frontendUrl,
-  credentials: true
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin || origin === frontendUrl || origin === 'https://amromeet.vercel.app' || origin?.includes('localhost')) {
+      callback(null, true);
+    } else {
+      callback(null, true); // Allow all for now to debug
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 

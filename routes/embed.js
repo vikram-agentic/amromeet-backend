@@ -62,6 +62,11 @@ router.get('/:username/embed-code', async (req, res, next) => {
 router.get('/:username', async (req, res, next) => {
   try {
     const { username } = req.params;
+    console.log('Embed request for username:', username);
+
+    if (!username) {
+      return res.status(400).json({ error: 'Username is required' });
+    }
 
     // Try exact slug match first, then try matching with UUID suffix
     let eventResult = await pool.query(
@@ -74,9 +79,12 @@ router.get('/:username', async (req, res, next) => {
       [username]
     );
 
+    console.log('Exact slug match found:', eventResult.rows.length);
+
     // If not found and username looks like it might have a UUID suffix, try base slug
     if (eventResult.rows.length === 0 && username.match(/-[a-f0-9]{8}$/)) {
       const baseSlug = username.replace(/-[a-f0-9]{8}$/, '');
+      console.log('Trying base slug:', baseSlug);
       eventResult = await pool.query(
         `SELECT et.id, et.user_id, et.name, et.description, et.duration_minutes,
                 et.color, u.first_name, u.last_name, u.company_name, u.avatar_url
@@ -87,11 +95,15 @@ router.get('/:username', async (req, res, next) => {
          LIMIT 1`,
         [`${baseSlug}-%`]
       );
+      console.log('Base slug match found:', eventResult.rows.length);
     }
 
     if (eventResult.rows.length === 0) {
+      console.log('No event found for:', username);
       return res.status(404).json({ error: 'Event not found' });
     }
+
+    console.log('Event found:', eventResult.rows[0].name);
 
     const event = eventResult.rows[0];
 
