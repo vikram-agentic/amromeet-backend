@@ -38,8 +38,12 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// Health check
+// Health check - support both /health and /api/health
 app.get('/health', (req, res) => {
+  res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+});
+
+app.get('/api/health', (req, res) => {
   res.json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
 
@@ -60,7 +64,31 @@ app.get('/health/db', async (req, res) => {
   }
 });
 
-// Routes
+app.get('/api/health/db', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT NOW()');
+    res.json({
+      status: 'connected',
+      database: 'PostgreSQL',
+      timestamp: result.rows[0].now
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'disconnected',
+      error: error.message
+    });
+  }
+});
+
+// Routes - mount under both /api and without prefix for compatibility
+app.use('/api/auth', authRoutes);
+app.use('/api/users', authMiddleware, userRoutes);
+app.use('/api/bookings', authMiddleware, bookingRoutes);
+app.use('/api/events', authMiddleware, eventRoutes);
+app.use('/api/analytics', authMiddleware, analyticsRoutes);
+app.use('/api/embed', embedRoutes); // Public route for embeds
+
+// Also mount without /api prefix for development
 app.use('/auth', authRoutes);
 app.use('/users', authMiddleware, userRoutes);
 app.use('/bookings', authMiddleware, bookingRoutes);
@@ -76,4 +104,6 @@ app.use((req, res) => {
 // Error handler
 app.use(errorHandler);
 
+// Export as both default and named export for Vercel compatibility
 export default app;
+export { app };
