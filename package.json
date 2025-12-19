@@ -1,0 +1,43 @@
+{
+  "name": "amromeet-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Amromeet Premium Scheduling SaaS Backend",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node --watch server.js",
+    "start": "node server.js",
+    "migrate": "node scripts/migrate.js",
+    "seed": "node scripts/seed.js"
+  },
+  "keywords": [
+    "scheduling",
+    "calendar",
+    "saas",
+    "google-meet"
+  ],
+  "author": "Amro AI",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.2",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "date-fns": "^2.30.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "googleapis": "^118.0.0",
+    "helmet": "^7.1.0",
+    "joi": "^17.11.0",
+    "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.10.0",
+    "node-mailjet": "^6.0.5",
+    "pg": "^8.11.3",
+    "resend": "^3.0.0",
+    "slug": "^11.0.1",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
