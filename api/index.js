@@ -96,7 +96,7 @@ app.get('/api/health/db', async (req, res) => {
 // Routes - mount under both /api and without prefix for compatibility
 app.use('/api/auth', authRoutes);
 app.use('/api/users', authMiddleware, userRoutes);
-app.use('/api/bookings', authMiddleware, bookingRoutes);
+app.use('/api/bookings', bookingRoutes); // Bookings handles auth internally (optionalAuth)
 app.use('/api/events', authMiddleware, eventRoutes);
 app.use('/api/analytics', authMiddleware, analyticsRoutes);
 app.use('/api/embed', embedRoutes); // Public route for embeds
@@ -104,7 +104,7 @@ app.use('/api/embed', embedRoutes); // Public route for embeds
 // Also mount without /api prefix for development
 app.use('/auth', authRoutes);
 app.use('/users', authMiddleware, userRoutes);
-app.use('/bookings', authMiddleware, bookingRoutes);
+app.use('/bookings', bookingRoutes); // Bookings handles auth internally (optionalAuth)
 app.use('/events', authMiddleware, eventRoutes);
 app.use('/analytics', authMiddleware, analyticsRoutes);
 app.use('/embed', embedRoutes); // Public route for embeds
