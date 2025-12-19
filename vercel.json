@@ -12,15 +12,7 @@
   "functions": {
     "api/index.js": {
       "memory": 1024,
-      "maxDuration": 60,
-      "includeFiles": [
-        "config/**",
-        "middleware/**",
-        "routes/**",
-        "utils/**",
-        "services/**",
-        "scripts/**"
-      ]
+      "maxDuration": 60
     }
   },
   "routes": [
